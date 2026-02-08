@@ -1,12 +1,22 @@
 "use client";
 import { useState } from "react";
+import { auth } from "./firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+
 export default function Login(){
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Login:", email, password);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("Logged in user:", userCredential.user);
+      alert("Login successful!");
+    } catch (error) {
+      alert(error.message);
+    }
   };
+
   return (
     <div className="w-full bg-white">
       <h2 className="text-2xl text-black font-semibold mb-4 text-center">Login</h2>
@@ -14,14 +24,14 @@ export default function Login(){
         <input
           type="email"
           placeholder="Email"
-          className="w-full p-2 border rounded text-gray-500"
+          className="w-full p-2 border rounded text-black"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-2 border rounded text-gray-500"
+          className="w-full p-2 border rounded text-black"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
