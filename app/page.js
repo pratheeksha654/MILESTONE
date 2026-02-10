@@ -33,7 +33,7 @@ export default function Home(){
             smart summaries, and actionable insights using AI.
           </p>
           <Link
-            href="/login"
+            href="/signup"
             className="inline-block mt-6 px-6 py-3 rounded-full bg-blue-400 text-gray-900 font-medium
              hover:bg-gray-100 transition"
           >

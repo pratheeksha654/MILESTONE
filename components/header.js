@@ -12,12 +12,11 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
 
-  // 🔥 IMPORTANT: initialise from currentUser
+ 
   const [isLoggedIn, setIsLoggedIn] = useState(
     () => !!auth.currentUser
   );
 
-  // Sticky header
   useEffect(() => {
     const handleScroll = () => {
       setIsSticky(window.scrollY > 10);
@@ -26,7 +25,6 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 🔐 Keep auth in sync
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       setIsLoggedIn(!!user);
@@ -54,7 +52,6 @@ export default function Header() {
     >
       <div className="px-4 flex items-center justify-between w-full h-20 bg-white shadow-md">
 
-        {/* LOGO */}
         <div className="flex items-center gap-2">
           <img
             src="/MinuteAI.png"
@@ -63,7 +60,7 @@ export default function Header() {
           />
         </div>
 
-        {/* DESKTOP NAV */}
+
         <nav className="hidden md:flex items-center gap-6 text-black font-sans">
           <Link href="/" className="hover:text-blue-600">
             HOME
@@ -81,7 +78,7 @@ export default function Header() {
           </button>
         </nav>
 
-        {/* MOBILE MENU BUTTON */}
+       
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden text-2xl text-black"
@@ -90,7 +87,7 @@ export default function Header() {
         </button>
       </div>
 
-      {/* MOBILE MENU */}
+     
       {menuOpen && (
         <div className="md:hidden bg-white border-t">
           <nav className="flex flex-col items-start px-6 py-4 space-y-4">

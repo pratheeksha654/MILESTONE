@@ -56,14 +56,14 @@ export default function Dashboard() {
 
       <div className="relative z-10">
 
-        {/* HEADER */}
+   
         <header className="px-8 py-4">
           <h1 className="text-4xl font-bold text-blue-700 dark:text-blue-400">
             Dashboard
           </h1>
         </header>
 
-        {/* DASHBOARD CONTENT */}
+     
         <section className="px-8 mt-8 pb-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
@@ -86,7 +86,10 @@ export default function Dashboard() {
               description="Insights generated using Gemini AI."
             />
 
-            {/* UPCOMING MEETINGS */}
+          
+
+
+
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-6 lg:col-span-3">
               <h2 className="font-semibold mb-6 text-blue-700 dark:text-blue-400 text-2xl">
                 Upcoming Meetings
@@ -107,10 +110,10 @@ export default function Dashboard() {
                         {m.title}
                       </p>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                        📅 {m.date}
+                         {m.date}
                       </p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        ⏰ {m.time}
+                         {m.time}
                       </p>
                     </div>
                   ))}

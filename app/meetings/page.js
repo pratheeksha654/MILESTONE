@@ -1,69 +1,109 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+} from "firebase/firestore";
+import Header  from "../../components/header";
+import Footer from "../../components/footer";
+
 
 export default function MeetingsPage() {
   const [meetings, setMeetings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const stored =
-      JSON.parse(localStorage.getItem("meetings")) || [];
-    setMeetings(stored);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setError("Please login to view past meetings.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const q = query(
+          collection(db, "meetings"),
+          where("userId", "==", user.uid),
+          orderBy("createdAt", "desc")
+        );
+
+        const snapshot = await getDocs(q);
+
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setMeetings(data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load meetings");
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-sky-100 to-indigo-100 px-4 sm:px-8 py-8">
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black text-gray-500 dark:text-gray-400">
+        Loading meetings…
+      </div>
+    );
+  }
 
-      <div className="max-w-5xl mx-auto mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-blue-700">
+  return (
+    <div>
+      <Header/>
+    <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white px-4 py-6">
+  
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 mb-6">
           Past Meetings
         </h1>
-        <p className="text-gray-600 mt-1">
-          Review your AI-generated meeting summaries
-        </p>
-      </div>
 
-      <div className="max-w-5xl mx-auto">
-        {meetings.length === 0 ? (
-          <div className="bg-white/80 backdrop-blur p-10 rounded-2xl shadow text-center">
-            <p className="text-gray-600 text-lg">
-              No meetings found.
-            </p>
-            <p className="text-sm text-gray-500 mt-2">
-              Upload a meeting to see AI summaries here.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {meetings.map((meeting) => (
-              <div
-                key={meeting.id}
-                className="group bg-white/90 backdrop-blur p-6 rounded-2xl shadow hover:shadow-xl transition"
-              >
-            
-                <span className="inline-block mb-3 text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-700">
-                  {meeting.createdAt}
-                </span>
-
-             
-                <h2 className="font-semibold text-xl text-gray-900 group-hover:text-blue-700 transition">
-                  {meeting.title}
-                </h2>
-
-       
-                <pre className="mt-4 whitespace-pre-wrap text-sm text-gray-700 line-clamp-6">
-                  {meeting.aiOutput}
-                </pre>
-
-             
-                <div className="mt-4 text-sm text-blue-600 font-medium">
-                  View details →
-                </div>
-              </div>
-            ))}
+        {error && (
+          <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 p-3 text-sm">
+            {error}
           </div>
         )}
+
+        {meetings.length === 0 && !error && (
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
+            No past meetings found.
+          </p>
+        )}
+
+        <div className="space-y-6">
+          {meetings.map((meeting) => (
+            <div
+              key={meeting.id}
+              className="rounded-xl p-4 sm:p-6 bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800"
+            >
+              <h2 className="text-lg font-semibold mb-3">
+                {meeting.title || "Untitled Meeting"}
+              </h2>
+
+            
+              <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                {meeting.aiOutput}
+              </pre>
+              
+            </div>
+          ))}
+        </div>
       </div>
+    </div>
+    <Footer/>
     </div>
   );
 }

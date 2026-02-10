@@ -11,7 +11,7 @@ export default function ProfileEdit() {
   const router = useRouter();
   const [user, setUser] = useState(null);
 
-  // ZUSTAND STORE
+
   const { profile, setProfile, updateProfileField } = useUserStore();
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function ProfileEdit() {
       { merge: true }
     );
 
-    alert("Profile updated successfully 🎉");
+    alert("Profile updated successfully ");
     router.push("/profile-edit");
   };
 
