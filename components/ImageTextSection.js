@@ -28,14 +28,14 @@ export default function ImageTextSection() {
           <section key={index} className={`py-20 px-6 ${section.bg}`}>
             <div className="max-w-6xl mx-auto grid gap-12 md:grid-cols-2 items-center">
               
-              {/* Image */}
+              
               <img
                 src={section.image}
                 alt=""
                 className={`w-full h-[300px] md:h-[450px] rounded-3xl shadow-sm object-cover ${imageOrder}`}
               />
 
-              {/* Text */}
+              
               <div className={`${textOrder}`}>
                 <h2 className="text-3xl font-semibold text-blue-600">
                   {section.title}

@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Helper function to handle the API call with a retry
+
 async function generateWithRetry(model, prompt, retries = 2) {
   try {
     const result = await model.generateContent(prompt);
@@ -27,7 +27,7 @@ export async function POST(req) {
       return NextResponse.json({ result: "Transcript is empty" }, { status: 400 });
     }
 
-    // UPDATED FOR FEB 2026: gemini-2.5-flash-lite is the free workhorse
+    
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash-lite", 
     });

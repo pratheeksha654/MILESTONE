@@ -93,7 +93,7 @@ export default function MeetingsPage() {
                 {meeting.title || "Untitled Meeting"}
               </h2>
 
-              {/* FULL AI OUTPUT */}
+            
               <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                 {meeting.aiOutput}
               </pre>
