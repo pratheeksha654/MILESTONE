@@ -4,7 +4,7 @@ const sections = [
     description:
       "MinuteAI understands conversations and converts them into structured, meaningful insights so you save time and effort.",
     image:
-      "https://drlongnecker.com/img/2026/01/ai-notetaking-presence.webp",
+      "https://media.licdn.com/dms/image/v2/C5112AQF0XmUZxFh2WA/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1567154250758?e=2147483647&v=beta&t=ZQa70p-eCJ50SkfVWbzLA8qacCIKkBDQwh9e-w-4HTY",
     bg: "bg-white dark:bg-black",
   },
   {
@@ -12,7 +12,7 @@ const sections = [
     description:
       "Upload your meeting → AI processes it → get transcript, summary, and action items in minutes.",
     image:
-      "https://www.softwaresuggest.com/blog/wp-content/uploads/2023/10/10-Best-AI-Note-Taking-App-in-2023-1.jpg",
+      "https://img.freepik.com/premium-photo/secretary-taking-notes-notebook-corporate-meeting-with-group-multiracial-business-people-discussing-together-meeting-room-diversity-professional-meeting-modern-office-concord_31965-240587.jpg",
     bg: "bg-[#f9f7f4] dark:bg-black",
   },
 ];

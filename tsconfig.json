@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/upload/page.js", "app/dashboard/page.js", "components/DashboardCard.js", "components/FeatureSection.js", "components/footer.js", "components/header.js", "components/ImageTextSection.js", "app/page.js"  ],
+, "app/upload/page.js", "app/dashboard/page.js", "components/DashboardCard.js", "components/FeatureSection.js", "components/footer.js", "components/header.js", "components/ImageTextSection.js", "app/page.js", "lib/firebaseAdmin.js"  ],
   "exclude": ["node_modules"]
 }
