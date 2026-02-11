@@ -1,152 +1,205 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import {
+  doc,
+  getDoc,
+  collection,
+  addDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import { useUserStore } from "@/store/useUserStore";
+import Header from "@/components/header";
+import { useRouter } from "next/navigation";
+import Footer from "../../components/footer";
 
-export default function ProfileEdit() {
+export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // ZUSTAND STORE
-  const { profile, setProfile, updateProfileField } = useUserStore();
+  const [meeting, setMeeting] = useState({
+    title: "",
+    date: "",
+    time: "",
+  });
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (currentUser) => {
-      if (!currentUser) return;
+      if (!currentUser) {
+        setLoading(false);
+        return;
+      }
 
       setUser(currentUser);
 
       const ref = doc(db, "users", currentUser.uid);
       const snap = await getDoc(ref);
 
-      if (snap.exists()) {
-        setProfile({
-          name: snap.data().name || "",
-          age: snap.data().age || "",
-          role: snap.data().role || "",
-          bio: snap.data().bio || "",
-        });
+      
+      if (!snap.exists()) {
+        router.push("/profile-edit");
+        return;
       }
+
+      setProfile(snap.data());
+      setLoading(false);
     });
 
     return () => unsub();
-  }, [setProfile]);
+  }, [router]);
 
-  const handleChange = (e) => {
-    updateProfileField(e.target.name, e.target.value);
+  const handleMeetingChange = (e) => {
+    setMeeting({ ...meeting, [e.target.name]: e.target.value });
   };
 
-  const saveProfile = async () => {
-    await setDoc(
-      doc(db, "users", user.uid),
-      {
-        email: user.email,
-        ...profile,
-        updatedAt: serverTimestamp(),
-      },
-      { merge: true }
+  const addMeeting = async () => {
+    if (!user || !meeting.title || !meeting.date || !meeting.time) return;
+
+    await addDoc(collection(db, "upcomingMeetings"), {
+      title: meeting.title,
+      date: meeting.date,
+      time: meeting.time,
+      userId: user.uid,
+      createdAt: serverTimestamp(),
+    });
+
+    setMeeting({ title: "", date: "", time: "" });
+    alert("Reminder added! Check Dashboard");
+  };
+
+  const logoutUser = async () => {
+    await signOut(auth);
+    router.push("/");
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+        Loading profile...
+      </div>
     );
+  }
 
-    alert("Profile updated successfully");
-    router.push("/profile-edit");
-  };
+  if (!user) {
+    return (
+      <div className="text-center mt-20 text-gray-700 dark:text-gray-300">
+        Please login
+      </div>
+    );
+  }
 
   return (
-    <div
-      className="
-        min-h-screen flex items-center justify-center p-6
-        bg-gradient-to-br from-indigo-100 to-purple-200
-        dark:from-gray-900 dark:to-gray-800
-        transition-colors duration-300
-      "
-    >
+    <>
+      <Header />
+
       <div
         className="
-          bg-white dark:bg-gray-800
-          w-full max-w-xl
-          rounded-2xl shadow-xl p-8
+          min-h-screen p-4 sm:p-6
+          bg-gradient-to-br from-pink-100 via-purple-100 to-indigo-100
+          dark:from-gray-900 dark:via-gray-800 dark:to-gray-900
+          transition-colors duration-300
         "
       >
-        <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
-          Profile Settings
-        </h1>
+        <div className="max-w-5xl mx-auto space-y-8">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 sm:p-8">
+            <div className="text-center">
+              <div
+                className="
+                  w-24 h-24 mx-auto rounded-full
+                  bg-gradient-to-r from-indigo-500 to-pink-500
+                  flex items-center justify-center
+                  text-white text-3xl font-bold
+                "
+              >
+                {profile?.name?.charAt(0) || "U"}
+              </div>
 
-        <div className="space-y-4">
-          <Input
-            label="Full Name"
-            name="name"
-            value={profile.name}
-            onChange={handleChange}
-          />
-          <Input
-            label="Age"
-            name="age"
-            type="number"
-            value={profile.age}
-            onChange={handleChange}
-          />
-          <Input
-            label="Role"
-            name="role"
-            value={profile.role}
-            onChange={handleChange}
-          />
+              <h2 className="text-xl font-bold mt-4 text-gray-800 dark:text-gray-100">
+                {profile?.name}
+              </h2>
 
-          <div>
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Bio
-            </label>
-            <textarea
-              name="bio"
-              rows="4"
-              value={profile.bio}
-              onChange={handleChange}
+              <p className="text-gray-500 dark:text-gray-400">
+                {profile?.role}
+              </p>
+            </div>
+
+            <div className="mt-6 space-y-3">
+              <Info label="Email" value={profile?.email} />
+              <Info label="Age" value={profile?.age} />
+              <Info label="Bio" value={profile?.bio} />
+            </div>
+
+            <button
+              onClick={logoutUser}
               className="
-                w-full mt-1 p-3 rounded-lg border
-                bg-white dark:bg-gray-700
-                text-gray-800 dark:text-gray-100
-                border-gray-300 dark:border-gray-600
-                focus:outline-none focus:ring-2 focus:ring-indigo-500
+                w-full mt-6
+                bg-red-600 hover:bg-red-700
+                text-white py-3 rounded-xl font-semibold
+                transition
               "
-            />
+            >
+              Logout
+            </button>
           </div>
 
-          <button
-            onClick={saveProfile}
-            className="
-              w-full py-3 rounded-xl font-semibold text-white
-              bg-gradient-to-r from-indigo-600 to-purple-600
-              hover:opacity-90 transition
-            "
-          >
-            Edit & View Profile
-          </button>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 sm:p-8">
+            <h2 className="font-semibold mb-4 text-gray-800 dark:text-gray-100">
+              Add Upcoming Meeting
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <input
+                name="title"
+                className="p-2 border rounded sm:col-span-3 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                placeholder="Meeting title"
+                value={meeting.title}
+                onChange={handleMeetingChange}
+              />
+
+              <input
+                type="date"
+                name="date"
+                className="p-2 border rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                value={meeting.date}
+                onChange={handleMeetingChange}
+              />
+
+              <input
+                type="time"
+                name="time"
+                className="p-2 border rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                value={meeting.time}
+                onChange={handleMeetingChange}
+              />
+
+              <button
+                onClick={addMeeting}
+                className="sm:col-span-1 bg-green-600 hover:bg-green-700 text-white rounded px-4 py-2 transition"
+              >
+                Add
+              </button>
+            </div>
+          </div>
         </div>
+
+        <Footer />
       </div>
-    </div>
+    </>
   );
 }
 
-function Input({ label, ...props }) {
+function Info({ label, value }) {
   return (
-    <div>
-      <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
+    <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+      <span className="text-gray-500 dark:text-gray-400">
         {label}
-      </label>
-      <input
-        {...props}
-        className="
-          w-full mt-1 p-3 rounded-lg border
-          bg-white dark:bg-gray-700
-          text-gray-800 dark:text-gray-100
-          border-gray-300 dark:border-gray-600
-          focus:outline-none focus:ring-2 focus:ring-indigo-500
-        "
-      />
+      </span>
+      <span className="font-medium text-gray-800 dark:text-gray-100">
+        {value || "-"}
+      </span>
     </div>
   );
 }

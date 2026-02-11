@@ -43,7 +43,7 @@ export default function AuthCard({
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      router.push("/dashboard");
+      router.push("/profile");
     } catch (err) {
       alert(err.message);
     }
@@ -61,7 +61,7 @@ export default function AuthCard({
         dark:bg-gray-900/80 dark:border dark:border-gray-800
       ">
 
-        {/* Logo */}
+        
         <div className="flex justify-center">
           <img
             src="/MinuteAI.png"
@@ -74,7 +74,7 @@ export default function AuthCard({
           {subtitle}
         </p>
 
-        {/* Inputs */}
+        
         <div className="space-y-4">
           <input
             type="email"
@@ -101,7 +101,7 @@ export default function AuthCard({
           />
         </div>
 
-        {/* Main Button */}
+        
         <button
           onClick={handleSubmit}
           className="
@@ -113,14 +113,14 @@ export default function AuthCard({
           {loading ? "Please wait..." : buttonText}
         </button>
 
-        {/* Divider */}
+        
         <div className="my-6 flex items-center gap-3">
           <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700" />
           <span className="text-gray-500 dark:text-gray-400 text-sm">or</span>
           <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700" />
         </div>
 
-        {/* Google Button */}
+        
         <button
           onClick={handleGoogle}
           className="
@@ -132,7 +132,7 @@ export default function AuthCard({
           Continue with Google
         </button>
 
-        {/* Bottom text */}
+        
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
           {bottomText}{" "}
           <Link
