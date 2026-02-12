@@ -123,7 +123,7 @@ export default function ProfileEdit() {
               hover:opacity-90 transition
             "
           >
-            Edit & View Profile
+            View Profile
           </button>
         </div>
       </div>
